@@ -1,0 +1,73 @@
+---
+title: "Appex 04: Potential Outcomes"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+    css: lab.css
+link-citations: yes
+---
+
+# Getting started
+
+- Go to our class's GitHub organization [sta-679-s22](https://github.com/sta-679-s22)
+- Find the GitHub repository (which we'll refer to as "repo" going forward) for this lab, `appex-04-potential-outcomes-YOUR-GITHUB-HANDLE`. This repo contains a template you can build on to complete your assignment.
+
+```{r clone-repo-link, fig.margin = TRUE, echo = FALSE, fig.width=3}
+knitr::include_graphics("img/01/clone-repo-link.png")
+```
+
+- On GitHub, click on the green **Clone or download** button, select **Use HTTPS** (this might already be selected by default, and if it is, you'll see the text **Clone with HTTPS** as in the image below). Click on the clipboard icon to copy the repo URL.
+
+```{r new-project-from-gh, fig.margin = TRUE, echo = FALSE, fig.width=3}
+knitr::include_graphics("img/01/new-project-from-gh.png")
+```
+
+- Go to RStudio Click File > New Project > Version Control > Git. In "Repository URL", paste the URL of your GitHub repository. It will be something like `https://github.com/LucyMcGowan/myrepo.git`.
+
+# Packages
+
+In this lab we will work with one package: `tidyverse` which is a collection of packages for doing data analysis in a "tidy" way. This should already been installed from your tech setup. 
+
+If you'd like to run your code in the Console as well you'll also need to load the package there. To do so, run the following in the console. 
+
+```{r eval = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse) 
+```
+
+Note that the package is also loaded with the same commands in your R Markdown document.
+
+1. We are interested on the impact of ice cream consumption on happiness, as indexed from 1 (not happy) to 5 (happy). Here the exposure, ice cream, was randomly assigned. Below is R code to create a small data set that includes potential outcomes for four individuals. Add the code to your R markdown file. Knit, commit, and push this to GitHub.
+
+```{r}
+d_random <- tibble(
+  x = c(1, 1, 0, 0),
+  y0 = c(2, 4, 1, 4),
+  y1 = c(5, 1, 5, 0),
+  y_obs = ifelse(x == 1, y1, y0)
+)
+
+d_random %>%
+  summarise(y1 - y0)
+```
+
+2. We can calculate the *average causal effect* but averaging across the individual effects. Copy the code below to your R Markdown file and write a sentence describing the average causal effect and the average observed effect. Knit, commit, and push this to Github.
+
+```{r}
+d_random %>%
+  summarise(effect = y1 - y0) %>%
+  summarise(average_effect = mean(effect))
+
+d_random %>%
+  summarise(average_observed = mean(y_obs[x == 1] - y_obs[x == 0]))
+```
+3. Suppose I am the one conducting the experiment and I know my friends well, so I know who will enjoy ice cream, and who will not. Therefore, I assign them ice cream based on my knowledge of their likelihood to enjoy it. The potential outcomes remain the same, but the treatment assignment and observed outcome changes. Copy the code below for this new experiment. Knit, commit, and push this to Github.
+
+```{r}
+d_lucy <- d_random %>%
+  mutate(x = c(1, 0, 1, 0),
+         y_obs = ifelse(x == 1, y1, y0)) 
+d_lucy
+```
+
+4. Using similar code as Exercise 2, calculate the average observed effect of this new experiment. How does this compare to the average causal effect? What can you learn from this? Knit, commit, and push the results to GitHub.
