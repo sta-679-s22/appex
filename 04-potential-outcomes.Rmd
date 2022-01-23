@@ -8,6 +8,8 @@ output:
 link-citations: yes
 ---
 
+**Note**: Be sure to push your work to GitHub at least once before 5pm tomorrow to get credit for this application exercise.
+
 # Getting started
 
 - Go to our class's GitHub organization [sta-679-s22](https://github.com/sta-679-s22)
@@ -37,7 +39,7 @@ library(tidyverse)
 
 Note that the package is also loaded with the same commands in your R Markdown document.
 
-Welcome to Lucy Land, a land where I have special powers so I can see all potential outcomes `r emo::ji("sunglasses")`. I will share those powers with you! Let's generate n = 50 meeple with one characteristic, whether they tend to be happy (half do, half don't). Let's also generate some potential outcomes, their happiness if they don't eat ice cream (`y0`) and their happiness if they do ((`y1`) (on a scale from 0 to 5). It turns out ice cream consumption has nothing to do with happiness in Lucy Land! All these happiness scores depend on is their prior likelihood to be happy. Copy this code into your RMarkdown document. Knit, Commit, and Push!
+Welcome to Lucy Land, a land where I have special powers so I can see all potential outcomes `r emo::ji("sunglasses")`. I will share those powers with you! Let's generate n = 50 meeple with one characteristic, whether they tend to be happy (half do, half don't). Let's turn this into a happiness index. Let's also generate some potential outcomes, their happiness if they don't eat ice cream (`y0`) and their happiness if they do (`y1`). It turns out ice cream consumption has nothing to do with happiness in Lucy Land! So `y0` and `y1` are equal, it's just their baseline happiness index. All these happiness scores depend on is their prior likelihood to be happy. Copy this code into your RMarkdown document. Knit, Commit, and Push!
 
 ```{r}
 ## Generate lucy land's meeple
@@ -46,19 +48,17 @@ set.seed(1)
 n <- 50
 meeple <- tibble(
   happy = sample(rep(c(1, 0), each = n / 2)),
-  y0 = case_when(
+  happiness = case_when(
     happy == 1 ~ rbinom(n, 5, 0.7),
     happy == 0 ~ rbinom(n, 3, 0.2)
   ),
-  y1 = case_when(
-    happy == 1 ~ rbinom(n, 5, 0.7),
-    happy == 0 ~ rbinom(n, 3, 0.2)
-  )
+  y0 = happiness,
+  y1 = happiness
 )
 ```
 
 
-1. We are interested on the impact of ice cream consumption on happiness. Here the exposure, ice cream, was randomly assigned. Below is R code to randomly assign the 100 meeple to eat ice cream (or not). Let's also create `y_obs`, the observed outcome for folks without our magic powers to see both potential outcomes. Add the code to your R markdown file. Explain what each part is doing in words. Knit, commit, and push this to GitHub.
+1. We are interested on the impact of ice cream consumption on happiness. Here the exposure, ice cream, was randomly assigned. Below is R code to randomly assign the 50 meeple to eat ice cream (or not). Let's also create `y_obs`, the observed outcome for folks without our magic powers to see both potential outcomes. Add the code to your R markdown file. Explain what each part is doing in words. Knit, commit, and push this to GitHub.
 
 ```{r}
 set.seed(5)
