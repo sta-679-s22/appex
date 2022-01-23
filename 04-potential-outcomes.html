@@ -172,57 +172,70 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>If you’d like to run your code in the Console as well you’ll also need to load the package there. To do so, run the following in the console.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) </span></code></pre></div>
 <p>Note that the package is also loaded with the same commands in your R Markdown document.</p>
+<p>Welcome to Lucy Land, a land where I have special powers so I can see all potential outcomes 😎. I will share those powers with you! Let’s generate n = 50 meeple with one characteristic, whether they tend to be happy (half do, half don’t). Let’s also generate some potential outcomes, their happiness if they don’t eat ice cream (<code>y0</code>) and their happiness if they do ((<code>y1</code>) (on a scale from 0 to 5). It turns out ice cream consumption has nothing to do with happiness in Lucy Land! All these happiness scores depend on is their prior likelihood to be happy. Copy this code into your RMarkdown document. Knit, Commit, and Push!</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Generate lucy land&#39;s meeple</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>meeple <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">happy =</span> <span class="fu">sample</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>), <span class="at">each =</span> n <span class="sc">/</span> <span class="dv">2</span>)),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">y0 =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    happy <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="fu">rbinom</span>(n, <span class="dv">5</span>, <span class="fl">0.7</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    happy <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="fu">rbinom</span>(n, <span class="dv">3</span>, <span class="fl">0.2</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">y1 =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    happy <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="fu">rbinom</span>(n, <span class="dv">5</span>, <span class="fl">0.7</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    happy <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="fu">rbinom</span>(n, <span class="dv">3</span>, <span class="fl">0.2</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <ol style="list-style-type: decimal">
-<li>We are interested on the impact of ice cream consumption on happiness, as indexed from 1 (not happy) to 5 (happy). Here the exposure, ice cream, was randomly assigned. Below is R code to create a small data set that includes potential outcomes for four individuals. Add the code to your R markdown file. Knit, commit, and push this to GitHub.</li>
+<li>We are interested on the impact of ice cream consumption on happiness. Here the exposure, ice cream, was randomly assigned. Below is R code to randomly assign the 100 meeple to eat ice cream (or not). Let’s also create <code>y_obs</code>, the observed outcome for folks without our magic powers to see both potential outcomes. Add the code to your R markdown file. Explain what each part is doing in words. Knit, commit, and push this to GitHub.</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>d_random <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y0 =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">4</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y1 =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">0</span>),</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_obs =</span> <span class="fu">ifelse</span>(x <span class="sc">==</span> <span class="dv">1</span>, y1, y0)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>d_random <span class="sc">%&gt;%</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(y1 <span class="sc">-</span> y0)</span></code></pre></div>
-<pre><code>## # A tibble: 4 × 1
-##   `y1 - y0`
-##       &lt;dbl&gt;
-## 1         3
-## 2        -3
-## 3         4
-## 4        -4</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>d_random <span class="ot">&lt;-</span> meeple <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">x =</span> <span class="fu">sample</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>), <span class="at">each =</span> n <span class="sc">/</span> <span class="dv">2</span>)),  <span class="co"># coin flip!</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">y_obs =</span> <span class="fu">ifelse</span>(x <span class="sc">==</span> <span class="dv">1</span>, y1, y0))</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
-<li>We can calculate the <em>average causal effect</em> but averaging across the individual effects. Copy the code below to your R Markdown file and write a sentence describing the average causal effect and the average observed effect. Knit, commit, and push this to Github.</li>
+<li>We can calculate the <em>average causal effect</em> but averaging across the individual effects. Copy the code below to your R Markdown file. Describe what each line is doing. Then write a sentence describing the average causal effect (using the true potential outcomes) and the average observed effect (using only <code>y_obs</code>). Knit, commit, and push this to Github.</li>
 </ol>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>d_random <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">effect =</span> y1 <span class="sc">-</span> y0) <span class="sc">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">average_effect =</span> <span class="fu">mean</span>(effect))</span></code></pre></div>
-<pre><code>## # A tibble: 1 × 1
-##   average_effect
-##            &lt;dbl&gt;
-## 1              0</code></pre>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">average_noicecream =</span> <span class="fu">mean</span>(y0),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">average_icecream =</span> <span class="fu">mean</span>(y1),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">average_effect =</span> <span class="fu">mean</span>(y1 <span class="sc">-</span> y0))</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 3
+##   average_noicecream average_icecream average_effect
+##                &lt;dbl&gt;            &lt;dbl&gt;          &lt;dbl&gt;
+## 1               1.82             1.72           -0.1</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>d_random <span class="sc">%&gt;%</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">average_observed =</span> <span class="fu">mean</span>(y_obs[x <span class="sc">==</span> <span class="dv">1</span>] <span class="sc">-</span> y_obs[x <span class="sc">==</span> <span class="dv">0</span>]))</span></code></pre></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">average_observed =</span> <span class="fu">mean</span>(y_obs[x <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(y_obs[x <span class="sc">==</span> <span class="dv">0</span>]))</span></code></pre></div>
 <pre><code>## # A tibble: 1 × 1
 ##   average_observed
 ##              &lt;dbl&gt;
-## 1              0.5</code></pre>
+## 1            -0.76</code></pre>
 <ol start="3" style="list-style-type: decimal">
-<li>Suppose I am the one conducting the experiment and I know my friends well, so I know who will enjoy ice cream, and who will not. Therefore, I assign them ice cream based on my knowledge of their likelihood to enjoy it. The potential outcomes remain the same, but the treatment assignment and observed outcome changes. Copy the code below for this new experiment. Knit, commit, and push this to Github.</li>
+<li>Suppose I am the one conducting the experiment and I know my meeple well, so I know who is generally happy, and who is not. Therefore, I assign them ice cream based on my knowledge of happiness, giving the happier people ice cream and the grumpy folks none. The potential outcomes remain the same, but the treatment assignment and observed outcome changes. Copy the code below for this new experiment. Describe what each line of code is doing. Knit, commit, and push this to Github.</li>
 </ol>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>d_lucy <span class="ot">&lt;-</span> d_random <span class="sc">%&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">x =</span> happy,</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">y_obs =</span> <span class="fu">ifelse</span>(x <span class="sc">==</span> <span class="dv">1</span>, y1, y0)) </span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>d_lucy</span></code></pre></div>
-<pre><code>## # A tibble: 4 × 4
-##       x    y0    y1 y_obs
-##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1     1     2     5     5
-## 2     0     4     1     4
-## 3     1     1     5     5
-## 4     0     4     0     4</code></pre>
+<pre><code>## # A tibble: 50 × 5
+##    happy    y0    y1     x y_obs
+##    &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;int&gt;
+##  1     1     4     2     1     2
+##  2     0     0     0     0     0
+##  3     1     4     4     1     4
+##  4     0     0     0     0     0
+##  5     1     2     3     1     3
+##  6     0     0     0     0     0
+##  7     1     3     3     1     3
+##  8     1     2     2     1     2
+##  9     0     1     0     0     1
+## 10     1     3     4     1     4
+## # … with 40 more rows</code></pre>
 <ol start="4" style="list-style-type: decimal">
-<li>Using similar code as Exercise 2, calculate the average observed effect of this new experiment. How does this compare to the average causal effect? What can you learn from this? Knit, commit, and push the results to GitHub.</li>
+<li>Using similar code as Exercise 2, calculate the average observed effect of this new experiment. How does this compare to the true average causal effect? What can you learn from this? Knit, commit, and push the results to GitHub.</li>
 </ol>
 </div>
 

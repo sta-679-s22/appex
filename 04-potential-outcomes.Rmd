@@ -37,37 +37,55 @@ library(tidyverse)
 
 Note that the package is also loaded with the same commands in your R Markdown document.
 
-1. We are interested on the impact of ice cream consumption on happiness, as indexed from 1 (not happy) to 5 (happy). Here the exposure, ice cream, was randomly assigned. Below is R code to create a small data set that includes potential outcomes for four individuals. Add the code to your R markdown file. Knit, commit, and push this to GitHub.
+Welcome to Lucy Land, a land where I have special powers so I can see all potential outcomes `r emo::ji("sunglasses")`. I will share those powers with you! Let's generate n = 50 meeple with one characteristic, whether they tend to be happy (half do, half don't). Let's also generate some potential outcomes, their happiness if they don't eat ice cream (`y0`) and their happiness if they do ((`y1`) (on a scale from 0 to 5). It turns out ice cream consumption has nothing to do with happiness in Lucy Land! All these happiness scores depend on is their prior likelihood to be happy. Copy this code into your RMarkdown document. Knit, Commit, and Push!
 
 ```{r}
-d_random <- tibble(
-  x = c(1, 1, 0, 0),
-  y0 = c(2, 4, 1, 4),
-  y1 = c(5, 1, 5, 0),
-  y_obs = ifelse(x == 1, y1, y0)
+## Generate lucy land's meeple
+set.seed(1)
+
+n <- 50
+meeple <- tibble(
+  happy = sample(rep(c(1, 0), each = n / 2)),
+  y0 = case_when(
+    happy == 1 ~ rbinom(n, 5, 0.7),
+    happy == 0 ~ rbinom(n, 3, 0.2)
+  ),
+  y1 = case_when(
+    happy == 1 ~ rbinom(n, 5, 0.7),
+    happy == 0 ~ rbinom(n, 3, 0.2)
+  )
 )
-
-d_random %>%
-  summarise(y1 - y0)
 ```
 
-2. We can calculate the *average causal effect* but averaging across the individual effects. Copy the code below to your R Markdown file and write a sentence describing the average causal effect and the average observed effect. Knit, commit, and push this to Github.
+
+1. We are interested on the impact of ice cream consumption on happiness. Here the exposure, ice cream, was randomly assigned. Below is R code to randomly assign the 100 meeple to eat ice cream (or not). Let's also create `y_obs`, the observed outcome for folks without our magic powers to see both potential outcomes. Add the code to your R markdown file. Explain what each part is doing in words. Knit, commit, and push this to GitHub.
+
+```{r}
+set.seed(5)
+
+d_random <- meeple %>%
+  mutate(x = sample(rep(c(1, 0), each = n / 2)),  # coin flip!
+         y_obs = ifelse(x == 1, y1, y0))
+```
+
+2. We can calculate the *average causal effect* but averaging across the individual effects. Copy the code below to your R Markdown file. Describe what each line is doing. Then write a sentence describing the average causal effect (using the true potential outcomes) and the average observed effect (using only `y_obs`). Knit, commit, and push this to Github.
 
 ```{r}
 d_random %>%
-  summarise(effect = y1 - y0) %>%
-  summarise(average_effect = mean(effect))
+  summarise(average_noicecream = mean(y0),
+            average_icecream = mean(y1),
+            average_effect = mean(y1 - y0))
 
 d_random %>%
-  summarise(average_observed = mean(y_obs[x == 1] - y_obs[x == 0]))
+  summarise(average_observed = mean(y_obs[x == 1]) - mean(y_obs[x == 0]))
 ```
-3. Suppose I am the one conducting the experiment and I know my friends well, so I know who will enjoy ice cream, and who will not. Therefore, I assign them ice cream based on my knowledge of their likelihood to enjoy it. The potential outcomes remain the same, but the treatment assignment and observed outcome changes. Copy the code below for this new experiment. Knit, commit, and push this to Github.
+3. Suppose I am the one conducting the experiment and I know my meeple well, so I know who is generally happy, and who is not. Therefore, I assign them ice cream based on my knowledge of happiness, giving the happier people ice cream and the grumpy folks none. The potential outcomes remain the same, but the treatment assignment and observed outcome changes. Copy the code below for this new experiment. Describe what each line of code is doing. Knit, commit, and push this to Github.
 
 ```{r}
 d_lucy <- d_random %>%
-  mutate(x = c(1, 0, 1, 0),
+  mutate(x = happy,
          y_obs = ifelse(x == 1, y1, y0)) 
 d_lucy
 ```
 
-4. Using similar code as Exercise 2, calculate the average observed effect of this new experiment. How does this compare to the average causal effect? What can you learn from this? Knit, commit, and push the results to GitHub.
+4. Using similar code as Exercise 2, calculate the average observed effect of this new experiment. How does this compare to the true average causal effect? What can you learn from this? Knit, commit, and push the results to GitHub.
